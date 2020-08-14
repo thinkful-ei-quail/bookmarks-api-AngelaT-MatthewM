@@ -8,3 +8,5 @@
 {"message":"Cannot destructure property 'title' of 'req.body' as it is undefined.","level":"error"}
 {"message":"Cannot destructure property 'title' of 'req.body' as it is undefined.","level":"error"}
 {"message":"Cannot destructure property 'title' of 'req.body' as it is undefined.","level":"error"}
+{"message":"Cannot read property 'json' of undefined","level":"error"}
+{"message":"Created new bookmark","level":"info"}

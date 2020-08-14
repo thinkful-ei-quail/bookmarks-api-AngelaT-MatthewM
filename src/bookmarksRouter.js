@@ -1,6 +1,7 @@
 const express = require('express');
 const { v4: uuid } = require('uuid');
 const bookmarkRouter = express.Router();
+const bodyJson = express.json();
 const bookmarks = require('./bookmarks');
 const logger = require('./logger');
 const { PORT } = require('./config');
@@ -16,7 +17,7 @@ bookmarkRouter
   .get((req, res) => {
     res.json(bookmarks);
   })
-  .post((req, res) => {
+  .post(bodyJson, (req, res) => {
     const { title, rating, URL, description } = req.body;
     if (!title) {
       logger.error('Title is required');
@@ -46,18 +47,28 @@ bookmarkRouter
     bookmarks.push(bookmark);
 
     logger.info('Created new bookmark');
-    res.status(201).location(`https://localhost:${PORT}/bookmarks/${bookmark.id}`);
+    res.status(201).location(`https://localhost:${PORT}/bookmarks/${bookmark.id}`).json(bookmark);
   });
 
 bookmarkRouter
   .route('/bookmarks/:id')
   .get((req, res) => {
     const { id } = req.params;
-    const bookmarkIndex = bookmarks.findIndex(bookmark => bookmark.id = id);
+    const bookmark = bookmarks.find(bookmark => bookmark.id === id);
+    if (!bookmark) {
+      return res.status(404).send('404 Not Found');
+    }
+    res.status(200).json(bookmark);
+  })
+  .delete((req, res) => {
+    const { id } = req.params;
+    const bookmarkIndex = bookmarks.findIndex(bookmark => bookmark.id === id);
     if (bookmarkIndex === -1) {
       return res.status(404).send('404 Not Found');
     }
-    res.status(200).json(bookmarks[bookmarkIndex]);
+    bookmarks.splice(bookmarkIndex, 1);
+    logger.info('Bookmark deleted');
+    res.status(204).end();
   });
 
 module.exports = bookmarkRouter;
